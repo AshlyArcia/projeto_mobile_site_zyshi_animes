@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ANIMES.</Text>
+      <Text style={styles.title}>CONTATO</Text>
 
       <ScrollView style={styles.scroll}>
         <View style={styles.card}>
