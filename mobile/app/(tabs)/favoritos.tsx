@@ -1,90 +1,130 @@
-import { Platform, StyleSheet, View, FlatList } from 'react-native';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  StatusBar,
+  SafeAreaView,
+  ImageBackground,
+} from "react-native";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-
-const favorites = [
-  {
-    id: '1',
-    title: 'Jujutsu Kaisen',
-  },
-  {
-    id: '2',
-    title: 'Record of Ragnarok',
-  },
-  {
-    id: '3',
-    title: 'To Be HeroX',
-  },
-];
-
-export default function TabTwoScreen() {
+export default function App() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#000000."
-          name="heart"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Pagina de Favoritos.</ThemedText>
-      </ThemedView>
-        <FlatList
-          data={favorites}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
 
-    </ParallaxScrollView>
+      <ImageBackground
+        source={{ uri: "https://i.pinimg.com/originals/4e/c6/e9/4ec6e92c44ee8d02e5ca5ce58dfb7035.gif" }}
+        style={styles.header}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          <Text style={styles.headerTitle}>FAVORITOS.</Text>
+        </View>
+      </ImageBackground>
+
+      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 50 }}>
+        <View style={styles.cardsContainer}>
+          <View style={styles.card}>
+            <ImageBackground
+              source={{ uri: 'https://i.pinimg.com/1200x/73/98/85/73988526c06d7197980e7559276eb1c2.jpg' }} // Coloque o link da imagem aqui
+              style={styles.cardImage}
+              resizeMode="contain"
+            >
+              <Text style={styles.cardText}>Jujutsu Kaisen8</Text>
+            </ImageBackground>
+          </View>
+
+          <View style={styles.card}>
+            <ImageBackground
+              source={{ uri: 'link-da-imagem-para-record-of-ragnarok' }} // Coloque o link da imagem aqui
+              style={styles.cardImage}
+              resizeMode="cover"
+            >
+              <Text style={styles.cardText}>Record of Ragnarok</Text>
+            </ImageBackground>
+          </View>
+
+          <View style={styles.card}>
+            <ImageBackground
+              source={{ uri: 'link-da-imagem-para-death-note' }} // Coloque o link da imagem aqui
+              style={styles.cardImage}
+              resizeMode="cover"
+            >
+              <Text style={styles.cardText}>Death Note</Text>
+            </ImageBackground>
+          </View>
+
+          <View style={styles.card}>
+            <ImageBackground
+              source={{ uri: 'link-da-imagem-para-to-be-herox' }} // Coloque o link da imagem aqui
+              style={styles.cardImage}
+              resizeMode="cover"
+            >
+              <Text style={styles.cardText}>To Be HeroX</Text>
+            </ImageBackground>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: "#121212",
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  header: {
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  favoritesContainer: {
-    marginTop: 20,
-    paddingHorizontal: 10,
+  overlay: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)", 
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontFamily: "Goldman",
+    fontSize: 28,
+    color: "#fff",
+    fontWeight: "bold",
+    letterSpacing: 1,
+  },
+  scroll: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  cardsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 50,
   },
   card: {
-    width: 150,
-    height: 100,  // Diminuímos a altura, pois não há mais imagens
-    marginRight: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#1e1e1e",
+    width: "45%", // Ajuste a largura para ser menor
+    marginBottom: 20,
     borderRadius: 10,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',  // Centraliza o título no card
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    overflow: "hidden",
   },
-  cardTitle: {
-    color: '#000',  // Mudança para cor de texto escura, visto que não há mais imagem
-    fontWeight: 'bold',
-    fontSize: 16,
+  cardImage: {
+    width: "100%",
+    height: 180,
+    justifyContent: "flex-end",
+    padding: 10,
+  },
+  cardText: {
+    fontFamily: "Goldman",
+    color: "#fff",
+    fontSize: 18,
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // Coloca fundo semi-transparente para o texto
+    padding: 5,
   },
 });
