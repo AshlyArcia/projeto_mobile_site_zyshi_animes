@@ -8,26 +8,36 @@ import {
   SafeAreaView,
   ImageBackground,
 } from "react-native";
-
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
+
+
+
       {}
       <ImageBackground
-        source={{ uri: "https://wallpapers.com/images/hd/male-anime-characters-e5qgslpvg4gaf0rc.jpg" }} 
+      
+        source={{ uri: "http://i.pinimg.com/originals/76/c0/a8/76c0a814cf966cc2c5093ed8064ac505.gif" }} 
         style={styles.header}
         resizeMode="cover"
       >
         <View style={styles.overlay}>
-          <Text style={styles.headerTitle}>ANIMES.</Text>
+          <Text>ANIMES</Text>
         </View>
       </ImageBackground>
 
       {}
       <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 24 }}>
-        <View style={styles.card}><Text style={styles.cardText}>Kaiju No. 8</Text></View>
+        <ImageBackground
+  source={{ uri: "https://upload.wikimedia.org/wikipedia/pt/9/92/Kaiju_N%C2%BA_8.jpg" }}
+  style={styles.card}
+  imageStyle={{ borderRadius: 20 }}
+>
+  <Text style={styles.cardText}>Kaiju No. 8</Text>
+</ImageBackground>
+
         <View style={styles.card}><Text style={styles.cardText}>One Piece</Text></View>
         <View style={styles.card}><Text style={styles.cardText}>Death Note</Text></View>
         <View style={styles.card}><Text style={styles.cardText}>Bleach</Text></View>
@@ -43,24 +53,16 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: 120,
+    height: 220,
     justifyContent: "center",
     alignItems: "center",
   },
   overlay: {
     flex: 1,
     width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)", 
+    height: "100%", 
     justifyContent: "center",
     alignItems: "center",
-  },
-  headerTitle: {
-    fontFamily: "Goldman",
-    fontSize: 28,
-    color: "#fff",
-    fontWeight: "bold",
-    letterSpacing: 1,
   },
 
   scroll: {
@@ -68,11 +70,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
+
+  cardImage: {
+
+
+
+
+
+
+  },
   card: {
+    alignSelf:'flex-end',
     backgroundColor: "#1e1e1e",
-    padding: 24,
+    width: "50%",
+    padding: 100,
     borderRadius: 16,
-    marginBottom: 15,
+    marginBottom: 30,
     borderWidth: 1,
     borderColor: "#2a2a3d",
   },
