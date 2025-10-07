@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import SidebarBg from "./assets/images/sidebar-bg.jpg.png"; // Caminho correto para sua imagem
 
+// URL da imagem diretamente
 const sidebarStyle: React.CSSProperties = {
   height: "100vh",
   width: 220,
@@ -8,7 +8,7 @@ const sidebarStyle: React.CSSProperties = {
   top: 0,
   left: 0,
   background: "#b71616",
-  backgroundImage: `url(${SidebarBg})`,
+  backgroundImage: `url('https://wallpapercave.com/wp/R0RplZv.jpg')`, // Usando o link diretamente
   backgroundSize: "cover",
   backgroundPosition: "center",
   paddingTop: 20,
@@ -171,9 +171,7 @@ function Sidebar({
           Início
         </a>
         <a
-          style={
-            hovered === "Serviços" ? sidebarLinkHoverStyle : sidebarLinkStyle
-          }
+          style={hovered === "Serviços" ? sidebarLinkHoverStyle : sidebarLinkStyle}
           onMouseEnter={() => setHovered("Serviços")}
           onMouseLeave={() => setHovered(null)}
           onClick={() => onNavigate("services")}
@@ -189,9 +187,7 @@ function Sidebar({
           Sobre
         </a>
         <a
-          style={
-            hovered === "Contato" ? sidebarLinkHoverStyle : sidebarLinkStyle
-          }
+          style={hovered === "Contato" ? sidebarLinkHoverStyle : sidebarLinkStyle}
           onMouseEnter={() => setHovered("Contato")}
           onMouseLeave={() => setHovered(null)}
           onClick={() => onNavigate("contact")}
