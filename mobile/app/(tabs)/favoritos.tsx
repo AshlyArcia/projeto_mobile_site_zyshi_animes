@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,93 @@ import {
   StatusBar,
   SafeAreaView,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 
+
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+
+
+interface Anime {
+    id: string;
+    title: string;
+    uri: string;
+}
+
+
+const ANIME_MAP: Anime[] = [
+  { 
+    id: 'jujutsu-kaisen', 
+    title: 'Jujutsu Kaisen', 
+    uri: 'https://i.pinimg.com/1200x/73/98/85/73988526c06d7197980e7559276eb1c2.jpg' 
+  },
+  { 
+    id: 'record-of-ragnarok', 
+    title: 'Record of Ragnarok', 
+    uri: 'https://i.pinimg.com/564x/df/76/9a/df769a667b2d5f7f32e957a078e8b23c.jpg' 
+  },
+  { 
+    id: 'death-note', 
+    title: 'Death Note', 
+    uri: 'https://i.pinimg.com/564x/a4/09/cc/a409cc9f36f90380f2d4e68e47f55b2d.jpg' 
+  },
+  { 
+    id: 'to-be-herox', 
+    title: 'To Be HeroX', 
+    uri: 'https://i.pinimg.com/564x/b8/ec/a9/b8eca924874c8b9d249f69741e9e7b41.jpg' 
+  },
+];
+
+
 export default function App() {
+  const [favoriteAnimes, setFavoriteAnimes] = useState<Record<string, boolean>>({});
+
+  const toggleFavorite = (animeId: string) => {
+    setFavoriteAnimes(prevFavorites => ({
+      ...prevFavorites,
+      [animeId]: !prevFavorites[animeId], 
+    }));
+  };
+ 
+  const renderCard = (anime: Anime) => {
+    const isFavorite = favoriteAnimes[anime.id] || false; 
+
+    return (
+      <View style={styles.card} key={anime.id}>
+        <ImageBackground
+          source={{ uri: anime.uri }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        >
+          {/* Container para o texto e a estrela UnU*/}
+          <View style={styles.cardContent}> 
+            <Text style={styles.cardText}>{anime.title}</Text>
+            
+            {/* Botão de Estrela */}
+            <TouchableOpacity 
+                onPress={() => toggleFavorite(anime.id)} 
+                style={styles.favoriteButton}
+            >
+              <MaterialCommunityIcons
+                name={isFavorite ? "star" : "star-outline"}
+                size={24}
+                color={isFavorite ? "#FFD700" : "#fff"}
+              />
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
       <ImageBackground
-        source={{ uri: "https://i.pinimg.com/originals/4e/c6/e9/4ec6e92c44ee8d02e5ca5ce58dfb7035.gif" }}
+        source={{ uri: "https://i.pinimg.com/originals/11/39/cd/1139cdb940ce667395b9e4b839c1c5f8.gif" }}
         style={styles.header}
         resizeMode="cover"
       >
@@ -26,50 +104,17 @@ export default function App() {
 
       <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 50 }}>
         <View style={styles.cardsContainer}>
-          <View style={styles.card}>
-            <ImageBackground
-              source={{ uri: 'https://i.pinimg.com/1200x/73/98/85/73988526c06d7197980e7559276eb1c2.jpg' }} // Coloque o link da imagem aqui
-              style={styles.cardImage}
-              resizeMode="contain"
-            >
-              <Text style={styles.cardText}>Jujutsu Kaisen8</Text>
-            </ImageBackground>
-          </View>
+          
+          {ANIME_MAP.map(renderCard)}
 
-          <View style={styles.card}>
-            <ImageBackground
-              source={{ uri: 'link-da-imagem-para-record-of-ragnarok' }} // Coloque o link da imagem aqui
-              style={styles.cardImage}
-              resizeMode="cover"
-            >
-              <Text style={styles.cardText}>Record of Ragnarok</Text>
-            </ImageBackground>
-          </View>
-
-          <View style={styles.card}>
-            <ImageBackground
-              source={{ uri: 'link-da-imagem-para-death-note' }} // Coloque o link da imagem aqui
-              style={styles.cardImage}
-              resizeMode="cover"
-            >
-              <Text style={styles.cardText}>Death Note</Text>
-            </ImageBackground>
-          </View>
-
-          <View style={styles.card}>
-            <ImageBackground
-              source={{ uri: 'link-da-imagem-para-to-be-herox' }} // Coloque o link da imagem aqui
-              style={styles.cardImage}
-              resizeMode="cover"
-            >
-              <Text style={styles.cardText}>To Be HeroX</Text>
-            </ImageBackground>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+
+// --- (Styles) ---
 
 const styles = StyleSheet.create({
   container: {
@@ -90,9 +135,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitle: {
-    fontFamily: "Goldman",
     fontSize: 28,
     color: "#fff",
+    fontFamily: "Golsdman",
     fontWeight: "bold",
     letterSpacing: 1,
   },
@@ -109,7 +154,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#1e1e1e",
-    width: "45%", // Ajuste a largura para ser menor
+    width: "48%", 
     marginBottom: 20,
     borderRadius: 10,
     overflow: "hidden",
@@ -118,13 +163,22 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 180,
     justifyContent: "flex-end",
+  },
+  
+  cardContent: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.6)", 
     padding: 10,
   },
   cardText: {
     fontFamily: "Goldman",
     color: "#fff",
-    fontSize: 18,
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // Coloca fundo semi-transparente para o texto
-    padding: 5,
+    fontSize: 16, 
   },
+  
+  favoriteButton: {
+      paddingLeft: 9, 
+  }
 });
