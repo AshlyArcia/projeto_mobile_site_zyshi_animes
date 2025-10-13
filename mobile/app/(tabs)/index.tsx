@@ -8,7 +8,7 @@ const sidebarStyle: React.CSSProperties = {
   top: 0,
   left: 0,
   background: "#b71616",
-  backgroundImage: `url('https://wallpapercave.com/wp/R0RplZv.jpg')`, // Usando o link diretamente
+  backgroundImage: `url('https://wallpaperaccess.com/full/11789057.jpg')`, // Usando o link diretamente
   backgroundSize: "cover",
   backgroundPosition: "center",
   paddingTop: 20,
@@ -44,17 +44,18 @@ const sidebarLinkHoverStyle: React.CSSProperties = {
 };
 
 const toggleBtnStyle: React.CSSProperties = {
-  position: "absolute" as "absolute",
-  left: 230,
-  top: 20,
+  position: "absolute",
+  left: 10,
+  top: 10,
   background: "#222",
   color: "#fff",
   border: "none",
-  fontSize: 24,
+  fontSize: 16,  // diminuiu de 24 para 16
   cursor: "pointer",
-  padding: "5px 12px",
+  padding: "3px 8px",  // diminuiu o espaçamento interno
   zIndex: 2,
 };
+
 
 const mainContentStyle: React.CSSProperties = {
   marginLeft: 240,
