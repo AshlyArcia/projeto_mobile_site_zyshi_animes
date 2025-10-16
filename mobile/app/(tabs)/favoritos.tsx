@@ -9,6 +9,8 @@ import {
   ImageBackground,
   TouchableOpacity,
   Animated,
+  Image,
+  Dimensions,
 } from "react-native";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -18,6 +20,8 @@ interface Anime {
   title: string;
   uri: string;
 }
+
+const { width: screenWidth } = Dimensions.get('window');
 
 const ANIME_MAP: Anime[] = [
   {
@@ -42,6 +46,61 @@ const ANIME_MAP: Anime[] = [
   },
 ];
 
+// Componente Sidebar
+function Sidebar({
+  closed,
+  toggle,
+}: {
+  closed: boolean;
+  toggle: () => void;
+}) {
+  const sidebarItems = [
+    { id: "home", label: "Início" },
+    { id: "favorites", label: "Favoritos" },
+    { id: "about", label: "Sobre" },
+    { id: "contact", label: "Contato" },
+  ];
+
+  return (
+    <>
+      {/* Overlay para fechar sidebar quando aberta */}
+      {!closed && (
+        <TouchableOpacity 
+          style={styles.overlay} 
+          onPress={toggle}
+          activeOpacity={1}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <Animated.View style={[
+        styles.sidebar,
+        closed && styles.sidebarClosed
+      ]}>
+        <Image
+          source={{ uri: 'https://wallpaperaccess.com/full/11789057.jpg' }}
+          style={styles.sidebarBackground}
+        />
+        <View style={styles.sidebarContent}>
+          {sidebarItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.sidebarLink}
+              onPress={toggle}
+            >
+              <Text style={styles.sidebarLinkText}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Animated.View>
+
+      {/* Botão Toggle */}
+      <TouchableOpacity style={styles.toggleBtn} onPress={toggle}>
+        <Text style={styles.toggleBtnText}>☰</Text>
+      </TouchableOpacity>
+    </>
+  );
+}
 
 function SimpleToast({ message, visible }: { message: string; visible: boolean }) {
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -54,7 +113,6 @@ function SimpleToast({ message, visible }: { message: string; visible: boolean }
         useNativeDriver: true,
       }).start();
 
-     
       const timeout = setTimeout(() => {
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -77,6 +135,7 @@ function SimpleToast({ message, visible }: { message: string; visible: boolean }
 }
 
 export default function App() {
+  const [sidebarClosed, setSidebarClosed] = useState(true);
   const [favoriteAnimes, setFavoriteAnimes] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
@@ -85,11 +144,9 @@ export default function App() {
     setFavoriteAnimes((prevFavorites) => {
       const newStatus = !prevFavorites[animeId];
 
-      
       setToastMessage(newStatus ? "Salvo em favoritos" : "Removido dos favoritos");
       setToastVisible(true);
 
-      
       setTimeout(() => {
         setToastVisible(false);
       }, 2300);
@@ -127,24 +184,37 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      <ImageBackground
-        source={{
-          uri: "https://i.pinimg.com/originals/11/39/cd/1139cdb940ce667395b9e4b839c1c5f8.gif",
-        }}
-        style={styles.header}
-        resizeMode="cover"
-      >
-        <View style={styles.overlay}>
-          <Text style={styles.headerTitle}>FAVORITOS.</Text>
-        </View>
-      </ImageBackground>
+      {/* Sidebar */}
+      <Sidebar
+        closed={sidebarClosed}
+        toggle={() => setSidebarClosed(!sidebarClosed)}
+      />
 
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 50 }}>
-        <View style={styles.cardsContainer}>{ANIME_MAP.map(renderCard)}</View>
-      </ScrollView>
+      <View style={[
+        styles.mainContent,
+        !sidebarClosed && styles.mainContentShifted
+      ]}>
+        {/* Header com background animado */}
+        <ImageBackground
+          source={{
+            uri: "https://i.pinimg.com/originals/11/39/cd/1139cdb940ce667395b9e4b839c1c5f8.gif",
+          }}
+          style={styles.header}
+          resizeMode="cover"
+        >
+          <View style={styles.overlay}>
+            <Text style={styles.headerTitle}>FAVORITOS.</Text>
+          </View>
+        </ImageBackground>
 
-      
-      <SimpleToast message={toastMessage} visible={toastVisible} />
+        {/* Lista de cards */}
+        <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 50 }}>
+          <View style={styles.cardsContainer}>{ANIME_MAP.map(renderCard)}</View>
+        </ScrollView>
+
+        {/* Toast Message */}
+        <SimpleToast message={toastMessage} visible={toastVisible} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -154,26 +224,85 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
   },
-  header: {
-    height: 120,
-    justifyContent: "center",
-    alignItems: "center",
+  // Sidebar Styles
+  sidebar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: 220,
+    zIndex: 1000,
+  },
+  sidebarClosed: {
+    width: 0,
+    overflow: 'hidden',
+  },
+  sidebarBackground: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  sidebarContent: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 10,
+  },
+  sidebarLink: {
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  sidebarLinkText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  toggleBtn: {
+    position: 'absolute',
+    left: 10,
+    top: 50,
+    backgroundColor: '#222',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    zIndex: 1001,
+  },
+  toggleBtnText: {
+    color: '#fff',
+    fontSize: 16,
   },
   overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 999,
+  },
+  // Main Content Styles
+  mainContent: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  mainContentShifted: {
+    marginLeft: 220,
+  },
+  // Header Styles
+  header: {
+    height: 120,
     justifyContent: "center",
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 28,
     color: "#fff",
-    fontFamily: "Golsdman",
+    fontFamily: "Goldman",
     fontWeight: "bold",
     letterSpacing: 1,
   },
+  // Scroll e Cards Styles
   scroll: {
     flex: 1,
     paddingHorizontal: 20,
@@ -197,7 +326,6 @@ const styles = StyleSheet.create({
     height: 180,
     justifyContent: "flex-end",
   },
-
   cardContent: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -210,11 +338,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
-
   favoriteButton: {
     paddingLeft: 9,
   },
-
+  // Toast Styles
   toastContainer: {
     position: "absolute",
     bottom: 50,

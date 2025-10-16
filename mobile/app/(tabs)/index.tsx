@@ -172,12 +172,12 @@ function Sidebar({
           Início
         </a>
         <a
-          style={hovered === "Serviços" ? sidebarLinkHoverStyle : sidebarLinkStyle}
-          onMouseEnter={() => setHovered("Serviços")}
+          style={hovered === "Favoritos" ? sidebarLinkHoverStyle : sidebarLinkStyle}
+          onMouseEnter={() => setHovered("Favoritos")}
           onMouseLeave={() => setHovered(null)}
-          onClick={() => onNavigate("services")}
+          onClick={() => onNavigate("favorites")}
         >
-          Serviços
+          Favoritos
         </a>
         <a
           style={hovered === "Sobre" ? sidebarLinkHoverStyle : sidebarLinkStyle}

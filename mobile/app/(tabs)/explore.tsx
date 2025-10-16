@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -27,21 +27,50 @@ interface Anime {
 
 const { width: screenWidth } = Dimensions.get('window');
 
+// Componente Toast
+function SimpleToast({ message, visible }: { message: string; visible: boolean }) {
+  const [fadeAnim] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      const timeout = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [visible]);
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View style={[styles.toastContainer, { opacity: fadeAnim }]}>
+      <Text style={styles.toastText}>{message}</Text>
+    </Animated.View>
+  );
+}
+
 // Componente Sidebar
 function Sidebar({
-  onNavigate,
   closed,
   toggle,
-  currentPage,
 }: {
-  onNavigate: (page: string) => void;
   closed: boolean;
   toggle: () => void;
-  currentPage: string;
 }) {
   const sidebarItems = [
     { id: "home", label: "Início" },
-    { id: "services", label: "Serviços" },
+    { id: "favorites", label: "Favoritos" },
     { id: "about", label: "Sobre" },
     { id: "contact", label: "Contato" },
   ];
@@ -70,14 +99,8 @@ function Sidebar({
           {sidebarItems.map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={[
-                styles.sidebarLink,
-                currentPage === item.id && styles.sidebarLinkActive
-              ]}
-              onPress={() => {
-                onNavigate(item.id);
-                toggle();
-              }}
+              style={styles.sidebarLink}
+              onPress={toggle}
             >
               <Text style={styles.sidebarLinkText}>{item.label}</Text>
             </TouchableOpacity>
@@ -93,147 +116,60 @@ function Sidebar({
   );
 }
 
-// Componente Navbar
-function Navbar({ onNavigate, current }: { onNavigate: (page: string) => void; current: string }) {
-  const navItems = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "Sobre" },
-    { id: "contact", label: "Contato" },
-  ];
-
+// Componente AnimeCard
+function AnimeCard({ anime, isFavorite, onToggleFavorite }: { anime: Anime; isFavorite: boolean; onToggleFavorite: (id: string) => void }) {
   return (
-    <View style={styles.navbar}>
-      <View style={styles.navbarUl}>
-        {navItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => onNavigate(item.id)}
-          >
-            <Text style={[
-              styles.navbarLink,
-              current === item.id && styles.navbarLinkActive
-            ]}>
-              {item.label}
+    <View style={styles.mainCard}>
+      <View style={styles.cardContent}>
+        <Image
+          source={{ uri: anime.image }}
+          style={styles.animeImage}
+          resizeMode="cover"
+        />
+        
+        <View style={styles.textContent}>
+          <View style={styles.headerRow}>
+            <Text style={styles.mainTitle} numberOfLines={1} ellipsizeMode="tail">
+              {anime.title}
             </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-}
+            <TouchableOpacity 
+              onPress={() => onToggleFavorite(anime.id)} 
+              style={styles.favoriteButton}
+            >
+              <MaterialCommunityIcons
+                name={isFavorite ? "star" : "star-outline"}
+                size={20}
+                color={isFavorite ? "#FFD700" : "#ccc"}
+              />
+            </TouchableOpacity>
+          </View>
 
-// Componentes das páginas
-function HomeCards({ animes, favoriteAnimes, toggleFavorite }: any) {
-  const AnimeCard = ({ anime }: { anime: Anime }) => {
-    const isFavorite = favoriteAnimes[anime.id] || false;
+          <View style={styles.statusRow}>
+            <Text style={styles.subtitle}>{anime.status}</Text>
+            <Text style={styles.detail}>{anime.detail}</Text>
+          </View>
 
-    return (
-      <View style={styles.mainCard}>
-        <View style={styles.cardContent}>
-          <Image
-            source={{ uri: anime.image }}
-            style={styles.animeImage}
-            resizeMode="cover"
-          />
-          
-          <View style={styles.textContent}>
-            <View style={styles.headerRow}>
-              <Text style={styles.mainTitle} numberOfLines={1} ellipsizeMode="tail">
-                {anime.title}
-              </Text>
-              <TouchableOpacity 
-                onPress={() => toggleFavorite(anime.id)} 
-                style={styles.favoriteButton}
-              >
-                <MaterialCommunityIcons
-                  name={isFavorite ? "star" : "star-outline"}
-                  size={20}
-                  color={isFavorite ? "#FFD700" : "#ccc"}
-                />
-              </TouchableOpacity>
-            </View>
+          <Text style={styles.description} numberOfLines={2}>
+            {anime.description}
+          </Text>
 
-            <View style={styles.statusRow}>
-              <Text style={styles.subtitle}>{anime.status}</Text>
-              <Text style={styles.detail}>{anime.detail}</Text>
-            </View>
-
-            <Text style={styles.description} numberOfLines={2}>
-              {anime.description}
-            </Text>
-
-            <View style={styles.bottomInfo}>
-              <View style={styles.tagsContainer}>
-                {anime.tags.map((tag: string, index: number) => (
-                  <View key={index} style={styles.tagBubble}>
-                    <Text style={styles.tagText}>{tag}</Text>
-                  </View>
-                ))}
-              </View>
-              
-              <View style={styles.ratingSection}>
-                <View style={styles.ratingContainer}>
-                  <Text style={styles.rating}>{anime.rating}</Text>
-                  <Text style={styles.ranking}>{anime.ranking}</Text>
+          <View style={styles.bottomInfo}>
+            <View style={styles.tagsContainer}>
+              {anime.tags.map((tag: string, index: number) => (
+                <View key={index} style={styles.tagBubble}>
+                  <Text style={styles.tagText}>{tag}</Text>
                 </View>
+              ))}
+            </View>
+            
+            <View style={styles.ratingSection}>
+              <View style={styles.ratingContainer}>
+                <Text style={styles.rating}>{anime.rating}</Text>
+                <Text style={styles.ranking}>{anime.ranking}</Text>
               </View>
             </View>
           </View>
         </View>
-      </View>
-    );
-  };
-
-  return (
-    <>
-      <Text style={styles.titleStyle}>ANIMES</Text>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {animes.map((anime: Anime) => (
-          <AnimeCard key={anime.id} anime={anime} />
-        ))}
-      </ScrollView>
-    </>
-  );
-}
-
-function About() {
-  return (
-    <View style={styles.pageContainer}>
-      <Text style={styles.pageTitle}>Sobre</Text>
-      <View style={styles.contentCard}>
-        <Text style={styles.cardText}>
-          <Text style={styles.boldText}>Sobre:</Text> Este é um projeto exemplo com Sidebar, Navbar e cards de animes, tudo em React Native!
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function Contact() {
-  return (
-    <View style={styles.pageContainer}>
-      <Text style={styles.pageTitle}>Contato</Text>
-      <View style={styles.contentCard}>
-        <Text style={styles.cardText}>
-          <Text style={styles.boldText}>Contato:</Text> Envie um email para contato@exemplo.com
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function Services() {
-  return (
-    <View style={styles.pageContainer}>
-      <Text style={styles.pageTitle}>Serviços</Text>
-      <View style={styles.contentCard}>
-        <Text style={styles.cardText}>
-          <Text style={styles.boldText}>Serviços:</Text> Aqui você pode encontrar nossos serviços fictícios!
-        </Text>
       </View>
     </View>
   );
@@ -241,14 +177,27 @@ function Services() {
 
 export default function App() {
   const [sidebarClosed, setSidebarClosed] = useState(true);
-  const [currentPage, setCurrentPage] = useState("home");
   const [favoriteAnimes, setFavoriteAnimes] = useState<Record<string, boolean>>({});
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
 
   const toggleFavorite = (animeId: string) => {
-    setFavoriteAnimes((prevFavorites) => ({
-      ...prevFavorites,
-      [animeId]: !prevFavorites[animeId],
-    }));
+    setFavoriteAnimes((prevFavorites) => {
+      const newStatus = !prevFavorites[animeId];
+
+      // Mostrar toast message
+      setToastMessage(newStatus ? "Salvo em favoritos" : "Removido dos favoritos");
+      setToastVisible(true);
+
+      setTimeout(() => {
+        setToastVisible(false);
+      }, 2300);
+
+      return {
+        ...prevFavorites,
+        [animeId]: newStatus,
+      };
+    });
   };
 
   const animes: Anime[] = [
@@ -298,39 +247,41 @@ export default function App() {
     }
   ];
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case "home":
-        return <HomeCards animes={animes} favoriteAnimes={favoriteAnimes} toggleFavorite={toggleFavorite} />;
-      case "about":
-        return <About />;
-      case "contact":
-        return <Contact />;
-      case "services":
-        return <Services />;
-      default:
-        return <HomeCards animes={animes} favoriteAnimes={favoriteAnimes} toggleFavorite={toggleFavorite} />;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
       <Sidebar
-        onNavigate={setCurrentPage}
         closed={sidebarClosed}
         toggle={() => setSidebarClosed(!sidebarClosed)}
-        currentPage={currentPage}
       />
       
       <View style={[
         styles.mainContent,
         !sidebarClosed && styles.mainContentShifted
       ]}>
-        <Navbar onNavigate={setCurrentPage} current={currentPage} />
-        {renderPage()}
+        {/* Título da página */}
+        <Text style={styles.titleStyle}>ANIMES</Text>
+        
+        {/* Lista de animes */}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {animes.map((anime: Anime) => (
+            <AnimeCard 
+              key={anime.id} 
+              anime={anime} 
+              isFavorite={favoriteAnimes[anime.id] || false}
+              onToggleFavorite={toggleFavorite}
+            />
+          ))}
+        </ScrollView>
       </View>
+
+      {/* Toast Message */}
+      <SimpleToast message={toastMessage} visible={toastVisible} />
     </SafeAreaView>
   );
 }
@@ -368,9 +319,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 8,
     backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  sidebarLinkActive: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   sidebarLinkText: {
     color: '#fff',
@@ -410,55 +358,7 @@ const styles = StyleSheet.create({
   mainContentShifted: {
     marginLeft: 220,
   },
-  // Navbar Styles
-  navbar: {
-    backgroundColor: '#333',
-    padding: 16,
-    marginHorizontal: -16,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    marginBottom: 20,
-  },
-  navbarUl: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  navbarLink: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  navbarLinkActive: {
-    color: '#FFD700',
-  },
-  // Page Styles
-  pageContainer: {
-    flex: 1,
-    paddingTop: 20,
-  },
-  pageTitle: {
-    fontSize: 28,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    fontFamily: 'Goldman',
-  },
-  contentCard: {
-    backgroundColor: '#1e1e1e',
-    padding: 20,
-    borderRadius: 10,
-    marginHorizontal: 20,
-  },
-  cardText: {
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  boldText: {
-    fontWeight: 'bold',
-  },
+  // Title Style
   titleStyle: {
     fontSize: 28,
     color: '#fff',
@@ -468,7 +368,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Goldman',
     marginTop: 10,
   },
-  // Anime Card Styles (mantidos do código anterior)
+  // Anime Card Styles
   scroll: {
     flex: 1,
   },
@@ -577,5 +477,24 @@ const styles = StyleSheet.create({
     color: "#ccc",
     fontSize: 10,
     marginTop: 1,
+  },
+  // Toast Styles
+  toastContainer: {
+    position: "absolute",
+    bottom: 50,
+    left: 20,
+    right: 20,
+    backgroundColor: "#ffffff7a",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  toastText: {
+    color: "#000000ff",
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
