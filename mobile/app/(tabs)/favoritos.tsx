@@ -301,6 +301,12 @@ const styles = StyleSheet.create({
     fontFamily: "Goldman",
     fontWeight: "bold",
     letterSpacing: 1,
+    // Centralizando o texto horizontalmente
+    textAlign: "center",
+    // Garantindo que o título fique no meio
+    position: "absolute", 
+    top: "50%",
+    left: "26%",
   },
   // Scroll e Cards Styles
   scroll: {
