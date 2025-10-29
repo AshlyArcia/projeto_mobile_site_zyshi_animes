@@ -1,74 +1,30 @@
 import React, { useState } from "react";
 
-// URL da imagem diretamente
-const sidebarStyle: React.CSSProperties = {
-  height: "100vh",
-  width: 220,
-  position: "fixed",
-  top: 0,
-  left: 0,
-  background: "#b71616",
-  backgroundImage: `url('https://wallpaperaccess.com/full/11789057.jpg')`, // Usando o link diretamente
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  paddingTop: 20,
-  transition: "0.3s",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-};
+// Adicionar a fonte Roboto via CSS
+const style = document.createElement('style');
+style.textContent = `
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+`;
+document.head.appendChild(style);
 
-const sidebarClosedStyle: React.CSSProperties = {
-  ...sidebarStyle,
-  width: 0,
-  overflow: "hidden",
-  paddingTop: 0,
-};
-
-const sidebarLinkStyle: React.CSSProperties = {
-  color: "#fff",
-  padding: 15,
-  textDecoration: "none",
-  display: "block",
-  fontSize: 18,
-  width: "100%",
-  textAlign: "center" as "center",
-  borderRadius: 8,
-  transition: ".3s",
-  cursor: "pointer",
-};
-
-const sidebarLinkHoverStyle: React.CSSProperties = {
-  ...sidebarLinkStyle,
-  background: "#444",
-};
-
-const toggleBtnStyle: React.CSSProperties = {
-  position: "absolute",
-  left: 10,
-  top: 10,
-  background: "#222",
-  color: "#fff",
-  border: "none",
-  fontSize: 16,  // diminuiu de 24 para 16
-  cursor: "pointer",
-  padding: "3px 8px",  // diminuiu o espaçamento interno
-  zIndex: 2,
-};
-
-
+// MAIN CONTENT:
 const mainContentStyle: React.CSSProperties = {
   marginLeft: 240,
   padding: "30px 20px 20px 20px",
   transition: "margin-left 0.3s",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  minHeight: "100vh",
+  fontFamily: "'Roboto', sans-serif",
 };
 
 const navbarStyle: React.CSSProperties = {
   background: "#333",
   padding: "1rem",
-  marginLeft: -20,
-  marginRight: -20,
   borderRadius: "0 0 10px 10px",
+  alignSelf: "stretch",
+  fontFamily: "'Roboto', sans-serif",
 };
 
 const navbarUlStyle: React.CSSProperties = {
@@ -77,20 +33,25 @@ const navbarUlStyle: React.CSSProperties = {
   gap: "2rem",
   margin: 0,
   padding: 0,
+  justifyContent: "center",
 };
 
 const navbarAStyle: React.CSSProperties = {
   color: "#fff",
   textDecoration: "none",
+  cursor: "pointer",
+  fontFamily: "'Roboto', sans-serif",
+  fontWeight: "500",
 };
 
 const titleStyle: React.CSSProperties = {
   fontSize: 28,
   color: "#fff",
-  fontWeight: "bold",
+  fontWeight: "700",
   marginBottom: 20,
   textAlign: "center" as "center",
   marginTop: 30,
+  fontFamily: "'Roboto', sans-serif",
 };
 
 const cardsListStyle: React.CSSProperties = {
@@ -99,50 +60,128 @@ const cardsListStyle: React.CSSProperties = {
   gap: 15,
   marginTop: 20,
   maxWidth: 400,
-  marginLeft: "auto",
-  marginRight: "auto",
+  width: "100%",
 };
 
 const cardStyle: React.CSSProperties = {
   backgroundColor: "#1e1e1e",
   padding: 20,
   borderRadius: 10,
+  width: "100%",
+  boxSizing: "border-box",
+  fontFamily: "'Roboto', sans-serif",
 };
 
 const cardTextStyle: React.CSSProperties = {
   color: "#fff",
   fontSize: 18,
+  fontFamily: "'Roboto', sans-serif",
+  fontWeight: "400",
 };
 
-function Navbar({ onNavigate, current }: { onNavigate: (page: string) => void, current: string }) {
+const repoLinkStyle: React.CSSProperties = {
+  color: "#93c5fd",
+  textDecoration: "underline",
+  display: "inline-block",
+  wordBreak: "break-all" as "break-all",
+  marginTop: 12,
+  fontFamily: "'Roboto', sans-serif",
+  fontWeight: "400",
+};
+
+// Estilos da Sidebar atualizados
+const sidebarStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  height: '100vh',
+  width: 220,
+  zIndex: 1000,
+  backgroundColor: '#1a1a1a',
+  paddingTop: 60,
+  paddingLeft: 10,
+  paddingRight: 10,
+  transition: "0.3s",
+  fontFamily: "'Roboto', sans-serif",
+};
+
+const sidebarClosedStyle: React.CSSProperties = {
+  ...sidebarStyle,
+  width: 0,
+  overflow: 'hidden',
+  paddingTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+};
+
+const sidebarLinkStyle: React.CSSProperties = {
+  padding: 15,
+  marginTop: 5,
+  marginBottom: 5,
+  borderRadius: 8,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  color: '#fff',
+  fontSize: 18,
+  textAlign: 'center' as 'center',
+  fontWeight: '600',
+  textDecoration: 'none',
+  display: 'block',
+  cursor: 'pointer',
+  transition: '0.3s',
+  fontFamily: "'Roboto', sans-serif",
+};
+
+const sidebarLinkHoverStyle: React.CSSProperties = {
+  ...sidebarLinkStyle,
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+};
+
+const toggleBtnStyle: React.CSSProperties = {
+  position: 'absolute',
+  left: 10,
+  top: 10,
+  backgroundColor: '#222',
+  padding: '6px 10px',
+  borderRadius: 6,
+  border: 'none',
+  color: '#fff',
+  fontSize: 16,
+  cursor: 'pointer',
+  zIndex: 1001,
+  fontFamily: "'Roboto', sans-serif",
+  fontWeight: "500",
+};
+
+const overlayStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0,0,0,0.5)',
+  zIndex: 999,
+};
+
+function Navbar({
+  onNavigate,
+  current,
+}: {
+  onNavigate: (page: string) => void;
+  current: string;
+}) {
   return (
     <nav style={navbarStyle}>
       <ul style={navbarUlStyle}>
         <li>
           <a
             style={navbarAStyle}
-            onClick={() => onNavigate("home")}
             href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate("about");
+            }}
           >
-            Home
-          </a>
-        </li>
-        <li>
-          <a
-            style={navbarAStyle}
-            onClick={() => onNavigate("about")}
-            href="#"
-          >
-            Sobre
-          </a>
-        </li>
-        <li>
-          <a
-            style={navbarAStyle}
-            onClick={() => onNavigate("contact")}
-            href="#"
-          >
-            Contato
+            Sobre/Contato
           </a>
         </li>
       </ul>
@@ -160,46 +199,96 @@ function Sidebar({
   toggle: () => void;
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
+
+  const sidebarItems = [
+    { id: "home", label: "Início" },
+    { id: "favorites", label: "Favoritos" },
+    { id: "about", label: "Sobre/Contato" },
+  ];
+
   return (
     <>
+      {!closed && (
+        <div 
+          style={overlayStyle} 
+          onClick={toggle}
+        />
+      )}
       <div style={closed ? sidebarClosedStyle : sidebarStyle} id="sidebar">
-        <a
-          style={hovered === "Início" ? sidebarLinkHoverStyle : sidebarLinkStyle}
-          onMouseEnter={() => setHovered("Início")}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => onNavigate("home")}
-        >
-          Início
-        </a>
-        <a
-          style={hovered === "Favoritos" ? sidebarLinkHoverStyle : sidebarLinkStyle}
-          onMouseEnter={() => setHovered("Favoritos")}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => onNavigate("favorites")}
-        >
-          Favoritos
-        </a>
-        <a
-          style={hovered === "Sobre" ? sidebarLinkHoverStyle : sidebarLinkStyle}
-          onMouseEnter={() => setHovered("Sobre")}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => onNavigate("about")}
-        >
-          Sobre
-        </a>
-        <a
-          style={hovered === "Contato" ? sidebarLinkHoverStyle : sidebarLinkStyle}
-          onMouseEnter={() => setHovered("Contato")}
-          onMouseLeave={() => setHovered(null)}
-          onClick={() => onNavigate("contact")}
-        >
-          Contato
-        </a>
+        <div style={{ flex: 1 }}>
+          {sidebarItems.map((item) => (
+            <a
+              key={item.id}
+              href="#"
+              style={
+                hovered === item.label ? sidebarLinkHoverStyle : sidebarLinkStyle
+              }
+              onMouseEnter={() => setHovered(item.label)}
+              onMouseLeave={() => setHovered(null)}
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate(item.id);
+                toggle();
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
       </div>
-      <button style={toggleBtnStyle} onClick={toggle}>
+      <button
+        style={toggleBtnStyle}
+        onClick={toggle}
+        aria-label={closed ? "Abrir menu lateral" : "Fechar menu lateral"}
+      >
         ☰
       </button>
     </>
+  );
+}
+
+function AboutContact() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 800, width: "100%", margin: "40px 0" }}>
+      {/* Sobre */}
+      <div style={{ ...cardStyle, maxWidth: 800, width: "100%" }}>
+        <div style={cardTextStyle}>
+          <strong style={{fontWeight: "600"}}>Sobre:</strong> Zyshi Animes é um projeto público para site/aplicação mobile focado em conteúdo de animes, com a maior parte do código em TypeScript. O repositório funciona como base para interface e navegação responsiva, mas não contém descrição detalhada nem licença pública.
+          <div>
+            <a
+              href="https://github.com/AshlyArcia/projeto_mobile_site_zyshi_animes"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={repoLinkStyle}
+            >
+              https://github.com/AshlyArcia/projeto_mobile_site_zyshi_animes
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Contato */}
+      <div style={{ ...cardStyle, maxWidth: 800, width: "100%" }}>
+        <div style={cardTextStyle}>
+          <strong style={{fontWeight: "600"}}>Contato:</strong>
+          <div style={{ marginTop: 12 }}>
+            <a href="mailto:ashly.arcia@escola.pr.gov.br" style={{ color: "#4af", fontFamily: "'Roboto', sans-serif" }}>
+              ashly.arcia@escola.pr.gov.br
+            </a>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <a href="mailto:ribeiro.davi30@escola.pr.gov.br" style={{ color: "#4af", fontFamily: "'Roboto', sans-serif" }}>
+              ribeiro.davi30@escola.pr.gov.br
+            </a>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <a href="mailto:anna.helloiza.santos@escola.pr.gov.br" style={{ color: "#4af", fontFamily: "'Roboto', sans-serif" }}>
+              anna.helloiza.santos@escola.pr.gov.br
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -225,49 +314,26 @@ function HomeCards() {
   );
 }
 
-function About() {
+function Favorites() {
   return (
-    <div style={{ ...cardStyle, maxWidth: 600, margin: "40px auto" }}>
+    <div style={{ ...cardStyle, maxWidth: 600, width: "100%", margin: "40px 0" }}>
       <div style={cardTextStyle}>
-        <strong>Sobre:</strong> Este é um projeto exemplo com Sidebar, Navbar e cards de animes, tudo em um único arquivo!
-      </div>
-    </div>
-  );
-}
-
-function Contact() {
-  return (
-    <div style={{ ...cardStyle, maxWidth: 600, margin: "40px auto" }}>
-      <div style={cardTextStyle}>
-        <strong>Contato:</strong> Envie um email para{" "}
-        <a href="mailto:contato@exemplo.com" style={{ color: "#4af" }}>
-          contato@exemplo.com
-        </a>
-      </div>
-    </div>
-  );
-}
-
-function Services() {
-  return (
-    <div style={{ ...cardStyle, maxWidth: 600, margin: "40px auto" }}>
-      <div style={cardTextStyle}>
-        <strong>Serviços:</strong> Aqui você pode encontrar nossos serviços fictícios!
+        <strong style={{fontWeight: "600"}}>Favoritos:</strong> Aqui você pode encontrar seus animes favoritos!
       </div>
     </div>
   );
 }
 
 export default function App() {
-  const [sidebarClosed, setSidebarClosed] = useState(false);
-  const [page, setPage] = useState("home");
+  const [sidebarClosed, setSidebarClosed] = useState(true);
+  const [page, setPage] = useState("about");
 
   function handleNavigate(to: string) {
     setPage(to);
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#121212" }}>
+    <div style={{ minHeight: "100vh", background: "#121212", fontFamily: "'Roboto', sans-serif" }}>
       <Sidebar
         onNavigate={handleNavigate}
         closed={sidebarClosed}
@@ -282,9 +348,8 @@ export default function App() {
       >
         <Navbar onNavigate={handleNavigate} current={page} />
         {page === "home" && <HomeCards />}
-        {page === "about" && <About />}
-        {page === "contact" && <Contact />}
-        {page === "services" && <Services />}
+        {page === "about" && <AboutContact />}
+        {page === "favorites" && <Favorites />}
       </div>
     </div>
   );
