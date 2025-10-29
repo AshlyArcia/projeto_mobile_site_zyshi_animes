@@ -62,8 +62,7 @@ function Sidebar({ closed, toggle }: { closed: boolean; toggle: () => void }) {
   const sidebarItems = [
     { id: "home", label: "Início" },
     { id: "favorites", label: "Favoritos" },
-    { id: "about", label: "Sobre" },
-    { id: "contact", label: "Contato" },
+    { id: "about-contact", label: "Sobre/Contato" },
   ];
 
   return (
@@ -403,7 +402,7 @@ const styles = StyleSheet.create({
     height: '100%', 
     width: 220, 
     zIndex: 1000,
-    backgroundColor: '#1a1a1a', // Cor cinza que combina com o site
+    backgroundColor: '#1a1a1a',
   },
   sidebarClosed: { width: 0, overflow: 'hidden' },
   sidebarContent: { flex: 1, paddingTop: 60, paddingHorizontal: 10 },
