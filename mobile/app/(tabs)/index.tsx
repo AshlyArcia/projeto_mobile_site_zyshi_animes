@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Adicionar a fonte Roboto via CSS
-const style = document.createElement('style');
-style.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
-`;
-document.head.appendChild(style);
+const useFontLoader = () => {
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const style = document.createElement('style');
+      style.textContent = `
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+      `;
+      document.head.appendChild(style);
+      
+      return () => {
+        document.head.removeChild(style);
+      };
+    }
+  }, []);
+};
 
 // MAIN CONTENT:
 const mainContentStyle: React.CSSProperties = {
@@ -89,7 +98,6 @@ const repoLinkStyle: React.CSSProperties = {
   fontWeight: "400",
 };
 
-// Estilos da Sidebar atualizados
 const sidebarStyle: React.CSSProperties = {
   position: 'fixed',
   top: 0,
@@ -327,6 +335,8 @@ function Favorites() {
 export default function App() {
   const [sidebarClosed, setSidebarClosed] = useState(true);
   const [page, setPage] = useState("about");
+
+  useFontLoader();
 
   function handleNavigate(to: string) {
     setPage(to);
