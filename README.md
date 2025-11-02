@@ -13,8 +13,6 @@ Funcionalidades
 
  Sistema de favoritos
 
- Busca por animes
-
  Design responsivo
 
  Navegação por menu lateral
