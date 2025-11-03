@@ -21,7 +21,7 @@ interface Anime {
   uri: string;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
 const ANIME_MAP: Anime[] = [
   {
@@ -46,7 +46,7 @@ const ANIME_MAP: Anime[] = [
   },
 ];
 
-// Componente Sidebar
+// === SIDEBAR ===
 function Sidebar({
   closed,
   toggle,
@@ -54,54 +54,40 @@ function Sidebar({
   closed: boolean;
   toggle: () => void;
 }) {
-  const sidebarItems = [
-    { id: "home", label: "Início" },
-    { id: "favorites", label: "Favoritos" },
-    { id: "about", label: "Sobre" },
-    { id: "contact", label: "Contato" },
-  ];
+  const items = ["Início", "Favoritos", "Sobre/Contato"];
 
   return (
     <>
-      {/* Overlay para fechar sidebar quando aberta */}
       {!closed && (
-        <TouchableOpacity 
-          style={styles.overlay} 
+        <TouchableOpacity
+          style={styles.overlay}
           onPress={toggle}
           activeOpacity={1}
         />
       )}
-      
-      {/* Sidebar */}
-      <Animated.View style={[
-        styles.sidebar,
-        closed && styles.sidebarClosed
-      ]}>
-        <Image
-          source={{ uri: 'https://wallpaperaccess.com/full/11789057.jpg' }}
-          style={styles.sidebarBackground}
-        />
+
+      <View style={[styles.sidebar, closed && styles.sidebarClosed]}>
         <View style={styles.sidebarContent}>
-          {sidebarItems.map((item) => (
+          {items.map((item, index) => (
             <TouchableOpacity
-              key={item.id}
-              style={styles.sidebarLink}
+              key={index}
+              style={styles.sidebarItem}
               onPress={toggle}
             >
-              <Text style={styles.sidebarLinkText}>{item.label}</Text>
+              <Text style={styles.sidebarText}>{item}</Text>
             </TouchableOpacity>
           ))}
         </View>
-      </Animated.View>
+      </View>
 
-      {/* Botão Toggle */}
-      <TouchableOpacity style={styles.toggleBtn} onPress={toggle}>
-        <Text style={styles.toggleBtnText}>☰</Text>
+      <TouchableOpacity style={styles.menuButton} onPress={toggle}>
+        <Text style={styles.menuText}>☰</Text>
       </TouchableOpacity>
     </>
   );
 }
 
+// Toast simples
 function SimpleToast({ message, visible }: { message: string; visible: boolean }) {
   const [fadeAnim] = useState(new Animated.Value(0));
 
@@ -171,7 +157,7 @@ export default function App() {
               <MaterialCommunityIcons
                 name={isFavorite ? "star" : "star-outline"}
                 size={24}
-                color={isFavorite ? "#ffd500ff" : "#ff9900ff"}
+                color={isFavorite ? "#FFD700" : "#ccc"}
               />
             </TouchableOpacity>
           </View>
@@ -184,17 +170,9 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Sidebar */}
-      <Sidebar
-        closed={sidebarClosed}
-        toggle={() => setSidebarClosed(!sidebarClosed)}
-      />
+      <Sidebar closed={sidebarClosed} toggle={() => setSidebarClosed(!sidebarClosed)} />
 
-      <View style={[
-        styles.mainContent,
-        !sidebarClosed && styles.mainContentShifted
-      ]}>
-        {/* Header com background animado */}
+      <View style={[styles.mainContent, !sidebarClosed && styles.mainContentShifted]}>
         <ImageBackground
           source={{
             uri: "https://i.pinimg.com/originals/11/39/cd/1139cdb940ce667395b9e4b839c1c5f8.gif",
@@ -202,17 +180,16 @@ export default function App() {
           style={styles.header}
           resizeMode="cover"
         >
-          <View style={styles.overlay}>
+          {/* Centraliza o título */}
+          <View style={styles.headerOverlay}>
             <Text style={styles.headerTitle}>FAVORITOS.</Text>
           </View>
         </ImageBackground>
 
-        {/* Lista de cards */}
         <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 50 }}>
           <View style={styles.cardsContainer}>{ANIME_MAP.map(renderCard)}</View>
         </ScrollView>
 
-        {/* Toast Message */}
         <SimpleToast message={toastMessage} visible={toastVisible} />
       </View>
     </SafeAreaView>
@@ -224,91 +201,89 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
   },
-  // Sidebar Styles
+
+  // === SIDEBAR ===
   sidebar: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    height: '100%',
-    width: 220,
+    height: "100%",
+    width: 200,
+    backgroundColor: "#1a1a1a",
     zIndex: 1000,
   },
   sidebarClosed: {
-    width: 0,
-    overflow: 'hidden',
-  },
-  sidebarBackground: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
+    display: "none",
   },
   sidebarContent: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: 80,
     paddingHorizontal: 10,
   },
-  sidebarLink: {
-    padding: 15,
-    marginVertical: 5,
+  sidebarItem: {
+    padding: 16,
+    marginVertical: 8,
+    backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 8,
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  sidebarLinkText: {
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: '600',
+  sidebarText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: "Roboto",
   },
-  toggleBtn: {
-    position: 'absolute',
-    left: 10,
+  menuButton: {
+    position: "absolute",
+    left: 16,
     top: 50,
-    backgroundColor: '#222',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#222",
+    padding: 8,
     borderRadius: 4,
     zIndex: 1001,
   },
-  toggleBtnText: {
-    color: '#fff',
+  menuText: {
+    color: "#fff",
     fontSize: 16,
+    fontFamily: "Roboto",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
     zIndex: 999,
   },
-  // Main Content Styles
+
   mainContent: {
     flex: 1,
   },
   mainContentShifted: {
-    marginLeft: 220,
+    marginLeft: 200,
   },
-  // Header Styles
+
+  // === HEADER CENTRALIZADO ===
   header: {
     height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 28,
     color: "#fff",
-    fontFamily: "Goldman",
     fontWeight: "bold",
     letterSpacing: 1,
-    // Centralizando o texto horizontalmente
     textAlign: "center",
-    // Garantindo que o título fique no meio
-    position: "absolute", 
-    top: "50%",
-    left: "26%",
   },
-  // Scroll e Cards Styles
+
+  // === CARDS ===
   scroll: {
     flex: 1,
     paddingHorizontal: 20,
@@ -321,10 +296,10 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   card: {
-    backgroundColor: "#000000ff",
+    backgroundColor: "#1a1a1a",
     width: "48%",
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 8,
     overflow: "hidden",
   },
   cardImage: {
@@ -340,14 +315,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cardText: {
-    fontFamily: "Goldman",
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
   },
   favoriteButton: {
     paddingLeft: 9,
   },
-  // Toast Styles
+
+  // === TOAST ===
   toastContainer: {
     position: "absolute",
     bottom: 50,
