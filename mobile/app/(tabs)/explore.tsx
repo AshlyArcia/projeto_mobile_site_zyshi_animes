@@ -7,8 +7,11 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  ImageBackground,
+  SafeAreaView
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 interface Anime {
   mal_id: number;
@@ -21,27 +24,28 @@ interface Anime {
   genres: Array<{ name: string }>;
 }
 
+
 function Sidebar({ closed, toggle }: { closed: boolean; toggle: () => void }) {
   const items = ['Início', 'Favoritos', 'Sobre/Contato'];
-  
+ 
   return (
     <>
       {!closed && (
-        <TouchableOpacity 
-          style={styles.overlay} 
+        <TouchableOpacity
+          style={styles.overlay}
           onPress={toggle}
           activeOpacity={1}
         />
       )}
       <View style={[
-        styles.sidebar, 
+        styles.sidebar,
         closed && styles.sidebarClosed
       ]}>
         <View style={styles.sidebarContent}>
           {items.map((item, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={styles.sidebarItem} 
+            <TouchableOpacity
+              key={index}
+              style={styles.sidebarItem}
               onPress={toggle}
             >
               <Text style={styles.sidebarText}>{item}</Text>
@@ -56,12 +60,14 @@ function Sidebar({ closed, toggle }: { closed: boolean; toggle: () => void }) {
   );
 }
 
-function AnimeCard({ anime, isFavorite, onToggleFavorite }: { 
-  anime: Anime; 
-  isFavorite: boolean; 
-  onToggleFavorite: (id: number) => void 
+
+function AnimeCard({ anime, isFavorite, onToggleFavorite }: {
+  anime: Anime;
+  isFavorite: boolean;
+  onToggleFavorite: (id: number) => void
 }) {
   const [expanded, setExpanded] = useState(false);
+
 
   return (
     <View style={styles.card}>
@@ -81,7 +87,9 @@ function AnimeCard({ anime, isFavorite, onToggleFavorite }: {
           </TouchableOpacity>
         </View>
 
+
         <Text style={styles.details}>{anime.type} • {anime.episodes || '?'} episódios</Text>
+
 
         <TouchableOpacity onPress={() => setExpanded(!expanded)}>
           <Text style={styles.synopsis} numberOfLines={expanded ? undefined : 3}>
@@ -91,6 +99,7 @@ function AnimeCard({ anime, isFavorite, onToggleFavorite }: {
             <Text style={styles.more}>{expanded ? 'Ver menos' : 'Ver mais'}</Text>
           )}
         </TouchableOpacity>
+
 
         <View style={styles.footer}>
           <View style={styles.genres}>
@@ -107,11 +116,13 @@ function AnimeCard({ anime, isFavorite, onToggleFavorite }: {
   );
 }
 
+
 export default function App() {
   const [sidebarClosed, setSidebarClosed] = useState(true);
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
   const [animes, setAnimes] = useState<Anime[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   const loadAnimes = async () => {
     try {
@@ -125,9 +136,11 @@ export default function App() {
     }
   };
 
+
   useEffect(() => {
     loadAnimes();
   }, []);
+
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev => ({
@@ -135,6 +148,7 @@ export default function App() {
       [id]: !prev[id]
     }));
   };
+
 
   if (loading) {
     return (
@@ -145,31 +159,48 @@ export default function App() {
     );
   }
 
+
   return (
-    <View style={styles.container}>
-      <Sidebar 
-        closed={sidebarClosed} 
-        toggle={() => setSidebarClosed(!sidebarClosed)} 
-      />
-      
-      <View style={[
-        styles.main,
-        !sidebarClosed && styles.mainWithSidebar
-      ]}>
-        <ScrollView style={styles.list}>
-          {animes.map((anime) => (
-            <AnimeCard 
-              key={anime.mal_id} 
-              anime={anime} 
-              isFavorite={favorites[anime.mal_id] || false}
-              onToggleFavorite={toggleFavorite}
-            />
-          ))}
-        </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={{
+            uri: "https://i.pinimg.com/originals/76/c0/a8/76c0a814cf966cc2c5093ed8064ac505.gif",
+          }}
+          style={styles.headerBackground}
+          resizeMode="cover"
+        >
+          <View style={styles.headerOverlay}>
+            <Text style={styles.headerTitle}>Animes</Text>
+          </View>
+        </ImageBackground>
+
+
+        <Sidebar
+          closed={sidebarClosed}
+          toggle={() => setSidebarClosed(!sidebarClosed)}
+        />
+       
+        <View style={[
+          styles.main,
+          !sidebarClosed && styles.mainWithSidebar
+        ]}>
+          <ScrollView style={styles.list}>
+            {animes.map((anime) => (
+              <AnimeCard
+                key={anime.mal_id}
+                anime={anime}
+                isFavorite={favorites[anime.mal_id] || false}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -326,4 +357,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontFamily: 'Roboto',
   },
+  headerBackground: {
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 28,
+    color: "#fff",
+    fontWeight: "bold",
+    letterSpacing: 1,
+    textAlign: "center",
+  },
 });
+
